@@ -41,6 +41,7 @@ Append to the `cache.php` config file in the stores array:
     'table' => 'cache',
     'database' => env('CACHE_DATABASE', database_path('cache.sqlite')),
     'prefix' => '',
+    'encrypted' => false,
 ],
 ```
 
