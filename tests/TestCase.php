@@ -21,6 +21,7 @@ abstract class TestCase extends OrchestraTestCase
             'table' => 'cache',
             'database' => database_path('cache.sqlite'),
             'prefix' => '',
+            'encrypted' => true,
         ]);
 
         $app->make('Illuminate\Contracts\Http\Kernel');

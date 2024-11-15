@@ -29,7 +29,10 @@ class CacheProvider extends ServiceProvider
         ]);
 
         Cache::macro('forgetLike', function ($query) {
-            app('db')->connection('sqlite_cache')->table('cache')->where('key', 'like', "%{$query}%")->delete();
+            app('db')->connection('sqlite_cache')
+                ->table('cache')
+                ->where('key', 'like', "%{$query}%")
+                ->delete();
 
             return true;
         });

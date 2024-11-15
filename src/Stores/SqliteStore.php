@@ -26,9 +26,15 @@ class SqliteStore extends DatabaseStore
         $expiration = $this->getTime() + $seconds;
 
         foreach ($values as $key => $value) {
+            if (config('cache.stores.sqlite.encrypted', false)) {
+                $value = encrypt($this->serialize($value));
+            } else {
+                $value = $this->serialize($value);
+            }
+
             $serializedValues[] = [
                 'key' => $this->prefix.$key,
-                'value' => encrypt($this->serialize($value)),
+                'value' => $value,
                 'expiration' => $expiration,
             ];
         }
@@ -71,7 +77,11 @@ class SqliteStore extends DatabaseStore
 
         return Arr::map($results, function ($value, $key) use ($values) {
             if ($cache = $values->firstWhere('key', $this->prefix.$key)) {
-                return $this->unserialize(decrypt($cache->value));
+                if (config('cache.stores.sqlite.encrypted', false)) {
+                    return $this->unserialize(decrypt($cache->value));
+                } else {
+                    return $this->unserialize($cache->value);
+                }
             }
 
             return $value;
@@ -85,7 +95,13 @@ class SqliteStore extends DatabaseStore
         }
 
         $key = $this->prefix.$key;
-        $value = encrypt($this->serialize($value));
+
+        if (config('cache.stores.sqlite.encrypted', false)) {
+            $value = encrypt($this->serialize($value));
+        } else {
+            $value = $this->serialize($value);
+        }
+
         $expiration = $this->getTime() + $seconds;
 
         if (! $this->getConnection() instanceof SqlServerConnection) {
