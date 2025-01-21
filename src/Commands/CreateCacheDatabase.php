@@ -11,14 +11,14 @@ class CreateCacheDatabase extends Command
      *
      * @var string
      */
-    protected $signature = 'make:cache:database';
+    protected $signature = 'make:cache-database';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Create a cache database.';
+    protected $description = 'Create an sqlite cache database.';
 
     /**
      * Execute the console command.
