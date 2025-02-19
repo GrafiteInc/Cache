@@ -5,14 +5,14 @@ namespace Grafite\Cache\Commands;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Config;
 
-class CreateCacheDatabase extends Command
+class CreateCacheLocksTable extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'make:cache-database';
+    protected $signature = 'make:cache-locks-table';
 
     /**
      * The console command description.
@@ -28,15 +28,9 @@ class CreateCacheDatabase extends Command
      */
     public function handle()
     {
-        $this->info('Creating cache database...');
+        $this->info('Adding cache_locks table...');
 
-        if (! file_exists(database_path('cache.sqlite'))) {
-            touch(database_path('cache.sqlite'));
-        }
-
-        \sleep(1);
-
-         Config::set('database.connections.sqlite_cache', [
+        Config::set('database.connections.sqlite_cache', [
             'driver' => 'sqlite',
             'database' => config('cache.stores.sqlite.database'),
             'prefix' => config('cache.stores.sqlite.prefix'),
@@ -44,8 +38,9 @@ class CreateCacheDatabase extends Command
 
         sleep(1);
 
-        // Set the table
-        app('db')->connection('sqlite_cache')->statement('CREATE TABLE cache (key STRING PRIMARY KEY, value LONGTEXT, expiration INTEGER)');
+        if (file_exists(config('cache.stores.sqlite.database'))) {
+            app('db')->connection('sqlite_cache')->statement('CREATE TABLE cache_locks (key STRING PRIMARY KEY, owner STRING, expiration INTEGER)');
+        }
 
         return 0;
     }
