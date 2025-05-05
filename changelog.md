@@ -3,6 +3,15 @@ All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 ----
 
+## [v1.0.4] - 2025-05-05
+
+### Chore
+-  version bumps
+- because of banner being incorrect
+
+### Feature
+-  added purge cache locks table
+
 ## [v1.0.3] - 2025-02-20
 
 ### Fixed
