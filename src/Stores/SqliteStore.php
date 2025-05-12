@@ -1,5 +1,5 @@
 <?php
-// put in app\Extensions
+
 namespace Grafite\Cache\Stores;
 
 use Illuminate\Support\Arr;
