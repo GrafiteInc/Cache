@@ -12,7 +12,7 @@ class CreateCacheLocksTable extends Command
      *
      * @var string
      */
-    protected $signature = 'make:cache-locks-table';
+    protected $signature = 'make:sql-cache-locks-table';
 
     /**
      * The console command description.

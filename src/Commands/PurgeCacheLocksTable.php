@@ -12,7 +12,7 @@ class PurgeCacheLocksTable extends Command
      *
      * @var string
      */
-    protected $signature = 'cache:purge-locks';
+    protected $signature = 'sql-cache:purge-locks';
 
     /**
      * The console command description.

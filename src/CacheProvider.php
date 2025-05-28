@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\ServiceProvider;
 use Grafite\Cache\Commands\CreateCacheDatabase;
+use Grafite\Cache\Commands\PurgeCacheLocksTable;
 use Grafite\Cache\Commands\CreateCacheLocksTable;
 
 class CacheProvider extends ServiceProvider
@@ -118,6 +119,7 @@ class CacheProvider extends ServiceProvider
         $this->commands([
             CreateCacheDatabase::class,
             CreateCacheLocksTable::class,
+            PurgeCacheLocksTable::class,
         ]);
     }
 }
