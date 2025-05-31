@@ -3,6 +3,14 @@ All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 ----
 
+## [v1.1.2] - 2025-05-31
+
+### Fix
+- change due to renaming
+
+### Chore
+- update readme & tests
+
 ## [v1.1.1] - 2025-05-29
 
 ### Refactor
