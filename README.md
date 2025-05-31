@@ -2,8 +2,8 @@
 
 **Cache** - SQLite based cache driver with some fancy extras like tagging and encryption etc.
 
-[![Build Status](https://github.com/GrafiteInc/Cache/workflows/PHP%20Package%20Tests/badge.svg?branch=main)](https://github.com/GrafiteInc/Cache/actions?query=workflow%3A%22PHP+Package+Tests%22)
-[![Maintainability](https://api.codeclimate.com/v1/badges/a90e41bd64d41508ef0e/maintainability)](https://codeclimate.com/github/GrafiteInc/Cache/maintainability)
+[![Build Status](https://github.com/GrafiteInc/Charts/actions/workflows/php-package-tests.yml/badge.svg?branch=main)](https://github.com/GrafiteInc/Charts/actions/workflows/php-package-tests.yml)
+[![Maintainability](https://qlty.sh/badges/3e066ff4-428d-48a9-bf2d-55fcd9f4e35e/maintainability.svg)](https://qlty.sh/gh/GrafiteInc/projects/Cache)
 [![Packagist](https://img.shields.io/packagist/dt/grafite/cache.svg)](https://packagist.org/packages/grafite/cache)
 [![license](https://img.shields.io/github/license/mashape/apistatus.svg)](https://packagist.org/packages/grafite/cache)
 
