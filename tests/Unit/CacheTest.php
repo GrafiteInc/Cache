@@ -15,7 +15,7 @@ class CacheTest extends TestCase
         }
 
         // Create the database
-        Artisan::call('make:cache-database');
+        Artisan::call('sql-cache:make:database');
 
         // Put a value
         Cache::put('foo', 'bar', 60);
@@ -32,7 +32,7 @@ class CacheTest extends TestCase
         }
 
         // Create the database
-        Artisan::call('make:cache-database');
+        Artisan::call('sql-cache:make:database');
 
         // Put a value
         $key = cache()->key('foo', ['bar']);
@@ -51,10 +51,10 @@ class CacheTest extends TestCase
         }
 
         // Create the database
-        Artisan::call('make:cache-database');
+        Artisan::call('sql-cache:make:database');
 
         // Create the lock table
-        Artisan::call('make:cache-locks-table');
+        Artisan::call('sql-cache:make:locks-table');
 
         $lock = cache()->lock('foo-bar', 10);
         $value = 'bar';
