@@ -29,11 +29,7 @@ class SqliteStore extends DatabaseStore
         $expiration = $this->getTime() + $seconds;
 
         foreach ($values as $key => $value) {
-            if (config('cache.stores.sqlite.encrypted', false)) {
-                $value = encrypt($this->serialize($value));
-            } else {
-                $value = $this->serialize($value);
-            }
+            $value = $this->serialize($value);
 
             $serializedValues[] = [
                 'key' => $this->prefix.$key,
@@ -120,11 +116,11 @@ class SqliteStore extends DatabaseStore
              $this->connection instanceof SQLiteConnection) &&
             str_contains($result, "\0")
         ) {
-            if (config('cache.stores.sqlite.encrypted', false)) {
-                $result = encrypt($result);
-            }
-
             $result = base64_encode($result);
+        }
+
+        if (config('cache.stores.sqlite.encrypted', false)) {
+            $result = encrypt($result);
         }
 
         return $result;
@@ -132,14 +128,14 @@ class SqliteStore extends DatabaseStore
 
     protected function unserialize($value)
     {
+        if (config('cache.stores.sqlite.encrypted', false)) {
+            $value = decrypt($value);
+        }
+
         if (($this->connection instanceof PostgresConnection ||
              $this->connection instanceof SQLiteConnection) &&
             ! Str::contains($value, [':', ';'])
         ) {
-            if (config('cache.stores.sqlite.encrypted', false)) {
-                $value = decrypt($value);
-            }
-
             $value = base64_decode($value);
         }
 
