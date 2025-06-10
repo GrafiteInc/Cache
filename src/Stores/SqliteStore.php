@@ -3,8 +3,11 @@
 namespace Grafite\Cache\Stores;
 
 use Illuminate\Support\Arr;
+use Illuminate\Support\Str;
 use Illuminate\Cache\DatabaseStore;
 use Illuminate\Database\QueryException;
+use Illuminate\Database\SQLiteConnection;
+use Illuminate\Database\PostgresConnection;
 use Illuminate\Database\SqlServerConnection;
 
 /**
@@ -77,11 +80,7 @@ class SqliteStore extends DatabaseStore
 
         return Arr::map($results, function ($value, $key) use ($values) {
             if ($cache = $values->firstWhere('key', $this->prefix.$key)) {
-                if (config('cache.stores.sqlite.encrypted', false)) {
-                    return $this->unserialize(decrypt($cache->value));
-                } else {
-                    return $this->unserialize($cache->value);
-                }
+                return $this->unserialize($cache->value);
             }
 
             return $value;
@@ -96,11 +95,7 @@ class SqliteStore extends DatabaseStore
 
         $key = $this->prefix.$key;
 
-        if (config('cache.stores.sqlite.encrypted', false)) {
-            $value = encrypt($this->serialize($value));
-        } else {
-            $value = $this->serialize($value);
-        }
+        $value = $this->serialize($value);
 
         $expiration = $this->getTime() + $seconds;
 
@@ -115,5 +110,39 @@ class SqliteStore extends DatabaseStore
         }
 
         return false;
+    }
+
+    protected function serialize($value)
+    {
+        $result = serialize($value);
+
+        if (($this->connection instanceof PostgresConnection ||
+             $this->connection instanceof SQLiteConnection) &&
+            str_contains($result, "\0")
+        ) {
+            if (config('cache.stores.sqlite.encrypted', false)) {
+                $result = encrypt($result);
+            }
+
+            $result = base64_encode($result);
+        }
+
+        return $result;
+    }
+
+    protected function unserialize($value)
+    {
+        if (($this->connection instanceof PostgresConnection ||
+             $this->connection instanceof SQLiteConnection) &&
+            ! Str::contains($value, [':', ';'])
+        ) {
+            if (config('cache.stores.sqlite.encrypted', false)) {
+                $value = decrypt($value);
+            }
+
+            $value = base64_decode($value);
+        }
+
+        return unserialize($value);
     }
 }
