@@ -3,6 +3,11 @@ All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 ----
 
+## [v1.2.0] - 2025-06-25
+
+### Feature
+- ability to support tags
+
 ## [v1.1.3] - 2025-06-10
 
 ### Fix
