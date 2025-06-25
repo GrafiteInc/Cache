@@ -4,6 +4,8 @@ namespace Grafite\Cache\Stores;
 
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
+use Illuminate\Cache\TagSet;
+use Illuminate\Cache\TaggedCache;
 use Illuminate\Cache\DatabaseStore;
 use Illuminate\Database\QueryException;
 use Illuminate\Database\SQLiteConnection;
@@ -20,6 +22,17 @@ class SqliteStore extends DatabaseStore
         $connection = app('db')->connection('sqlite_cache');
 
         parent::__construct($connection, config('cache.stores.sqlite.table', 'cache'), config('cache.stores.sqlite.prefix', ''));
+    }
+
+    /**
+     * Begin executing a new tags operation.
+     *
+     * @param  array|mixed  $names
+     * @return \Illuminate\Cache\TaggedCache
+     */
+    public function tags($names)
+    {
+        return new TaggedCache($this, new TagSet($this, is_array($names) ? $names : func_get_args()));
     }
 
     public function putMany(array $values, $seconds)
