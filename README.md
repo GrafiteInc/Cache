@@ -47,7 +47,7 @@ Append to the `cache.php` config file in the stores array:
 
 ## Documentation
 
-[https://docs.grafite.ca/utilities/cache](https://docs.grafite.ca/utilities/cache)
+[https://documentation.grafite.ca/docs/utilities-cache](https://documentation.grafite.ca/docs/utilities-cache)
 
 ## License
 Support is open-sourced software licensed under the [MIT license](http://opensource.org/licenses/MIT)
