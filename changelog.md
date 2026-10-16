@@ -3,6 +3,11 @@ All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 ----
 
+## [v1.3.1] - 2026-10-16
+
+### Fix
+- issue with db creation path
+
 ## [v1.3.0] - 2026-04-07
 
 ### Feature
