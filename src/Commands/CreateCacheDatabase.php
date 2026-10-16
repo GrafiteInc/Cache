@@ -30,8 +30,8 @@ class CreateCacheDatabase extends Command
     {
         $this->info('Creating cache database...');
 
-        if (! file_exists(database_path('cache.sqlite'))) {
-            touch(database_path('cache.sqlite'));
+        if (! file_exists(config('cache.stores.sqlite.database'))) {
+            touch(config('cache.stores.sqlite.database'));
         }
 
         \sleep(1);
