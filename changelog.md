@@ -3,6 +3,20 @@ All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 ----
 
+## [v1.4.0] - 2026-11-17
+
+### Docs
+- document multi-worker SQLite configuration
+
+### Ci
+- run tests on PHP 8.3 and 8.4
+
+### Test(cache)
+- cover connection config and concurrency behavior
+
+### Feat(cache)
+- centralize connection config and concurrency settings
+
 ## [v1.3.1] - 2026-10-16
 
 ### Fix
