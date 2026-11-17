@@ -5,7 +5,6 @@ namespace Grafite\Cache;
 use Exception;
 use Grafite\Cache\Stores\SqliteStore;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Config;
 use Illuminate\Support\ServiceProvider;
 use Grafite\Cache\Commands\CreateCacheDatabase;
 use Grafite\Cache\Commands\PurgeCacheLocksTable;
@@ -24,14 +23,10 @@ class CacheProvider extends ServiceProvider
             return Cache::repository(new SqliteStore);
         });
 
-        Config::set('database.connections.sqlite_cache', [
-            'driver' => 'sqlite',
-            'database' => config('cache.stores.sqlite.database'),
-            'prefix' => config('cache.stores.sqlite.prefix'),
-        ]);
+        CacheConnection::register();
 
         Cache::macro('forgetLike', function ($query) {
-            app('db')->connection('sqlite_cache')
+            app('db')->connection(CacheConnection::NAME)
                 ->table('cache')
                 ->where('key', 'like', "%{$query}%")
                 ->delete();
@@ -40,7 +35,7 @@ class CacheProvider extends ServiceProvider
         });
 
         Cache::macro('forgetTag', function ($queryTag) {
-            $items = app('db')->connection('sqlite_cache')->table('cache')->get();
+            $items = app('db')->connection(CacheConnection::NAME)->table('cache')->get();
 
             $keys = $items->filter(function ($item) use ($queryTag) {
                 [$key, $tags] = explode(':', $item->key);
@@ -52,13 +47,13 @@ class CacheProvider extends ServiceProvider
                 }
             })->pluck('key');
 
-            app('db')->connection('sqlite_cache')->table('cache')->whereIn('key', $keys)->delete();
+            app('db')->connection(CacheConnection::NAME)->table('cache')->whereIn('key', $keys)->delete();
 
             return true;
         });
 
         Cache::macro('forgetTags', function ($queryTag) {
-            $items = app('db')->connection('sqlite_cache')->table('cache')->get();
+            $items = app('db')->connection(CacheConnection::NAME)->table('cache')->get();
 
             $keys = $items->filter(function ($item) use ($queryTag) {
                 [$key, $tags] = explode(':', $item->key);
@@ -69,13 +64,13 @@ class CacheProvider extends ServiceProvider
                 }
             })->pluck('key');
 
-            app('db')->connection('sqlite_cache')->table('cache')->whereIn('key', $keys)->delete();
+            app('db')->connection(CacheConnection::NAME)->table('cache')->whereIn('key', $keys)->delete();
 
             return true;
         });
 
         Cache::macro('getTag', function ($queryTag) {
-            $items = app('db')->connection('sqlite_cache')->table('cache')->get();
+            $items = app('db')->connection(CacheConnection::NAME)->table('cache')->get();
 
             return $items->filter(function ($item) use ($queryTag) {
                 [$key, $tags] = explode(':', $item->key);

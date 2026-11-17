@@ -3,7 +3,7 @@
 namespace Grafite\Cache\Commands;
 
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Config;
+use Grafite\Cache\CacheConnection;
 
 class CreateCacheLocksTable extends Command
 {
@@ -30,16 +30,10 @@ class CreateCacheLocksTable extends Command
     {
         $this->info('Adding cache_locks table...');
 
-        Config::set('database.connections.sqlite_cache', [
-            'driver' => 'sqlite',
-            'database' => config('cache.stores.sqlite.database'),
-            'prefix' => config('cache.stores.sqlite.prefix'),
-        ]);
-
-        sleep(1);
+        CacheConnection::register();
 
         if (file_exists(config('cache.stores.sqlite.database'))) {
-            app('db')->connection('sqlite_cache')->statement('CREATE TABLE cache_locks (key STRING PRIMARY KEY, owner STRING, expiration INTEGER)');
+            app('db')->connection(CacheConnection::NAME)->statement('CREATE TABLE cache_locks (key STRING PRIMARY KEY, owner STRING, expiration INTEGER)');
         }
 
         return 0;

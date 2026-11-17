@@ -2,6 +2,9 @@
 
 namespace Grafite\Cache\Stores;
 
+use Closure;
+use Throwable;
+use Grafite\Cache\CacheConnection;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use Illuminate\Cache\TagSet;
@@ -19,7 +22,7 @@ class SqliteStore extends DatabaseStore
 {
     public function __construct()
     {
-        $connection = app('db')->connection('sqlite_cache');
+        $connection = app('db')->connection(CacheConnection::NAME);
 
         parent::__construct($connection, config('cache.stores.sqlite.table', 'cache'), config('cache.stores.sqlite.prefix', ''));
     }
@@ -119,6 +122,86 @@ class SqliteStore extends DatabaseStore
         }
 
         return false;
+    }
+
+    /**
+     * Increment or decrement inside a transaction that uses the configured
+     * transaction_mode (e.g. IMMEDIATE) on every Laravel and PHP version.
+     *
+     * Laravel 12+ on PHP 8.4+ applies transaction_mode natively, so we defer
+     * to the parent there. Otherwise we issue BEGIN/COMMIT ourselves via raw
+     * statements, which bypasses PDO's transaction tracking (PDO on PHP < 8.4
+     * does not recognise a manually issued BEGIN).
+     *
+     * @param  string  $key
+     * @param  int|float  $value
+     * @param  \Closure  $callback
+     * @return int|false
+     */
+    protected function incrementOrDecrement($key, $value, Closure $callback)
+    {
+        $mode = config('database.connections.'.CacheConnection::NAME.'.transaction_mode');
+
+        if (is_null($mode)
+            || $mode === 'DEFERRED'
+            || CacheConnection::transactionModeHandledNatively()
+            || $this->connection->transactionLevel() > 0
+        ) {
+            return parent::incrementOrDecrement($key, $value, $callback);
+        }
+
+        $this->connection->unprepared("BEGIN {$mode} TRANSACTION");
+
+        try {
+            $result = $this->performIncrementOrDecrement($key, $value, $callback);
+
+            $this->connection->unprepared('COMMIT');
+        } catch (Throwable $e) {
+            try {
+                $this->connection->unprepared('ROLLBACK');
+            } catch (Throwable) {
+                // SQLite may have already rolled back; surface the original error.
+            }
+
+            throw $e;
+        }
+
+        return $result;
+    }
+
+    /**
+     * Mirrors the body of DatabaseStore::incrementOrDecrement (identical in Laravel 11-13).
+     *
+     * @param  string  $key
+     * @param  int|float  $value
+     * @param  \Closure  $callback
+     * @return int|false
+     */
+    protected function performIncrementOrDecrement($key, $value, Closure $callback)
+    {
+        $prefixed = $this->prefix.$key;
+
+        $cache = $this->table()->where('key', $prefixed)->first();
+
+        if (is_null($cache)) {
+            return false;
+        }
+
+        $cache = is_array($cache) ? (object) $cache : $cache;
+
+        $current = $this->unserialize($cache->value);
+
+        $new = $callback((int) $current, $value);
+
+        if (! is_numeric($current)) {
+            return false;
+        }
+
+        $this->table()->where('key', $prefixed)->update([
+            'value' => $this->serialize($new),
+        ]);
+
+        return $new;
     }
 
     protected function serialize($value)

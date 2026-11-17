@@ -3,7 +3,7 @@
 namespace Grafite\Cache\Commands;
 
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Config;
+use Grafite\Cache\CacheConnection;
 
 class PurgeCacheLocksTable extends Command
 {
@@ -28,16 +28,10 @@ class PurgeCacheLocksTable extends Command
      */
     public function handle()
     {
-        Config::set('database.connections.sqlite_cache', [
-            'driver' => 'sqlite',
-            'database' => config('cache.stores.sqlite.database'),
-            'prefix' => config('cache.stores.sqlite.prefix'),
-        ]);
-
-        sleep(1);
+        CacheConnection::register();
 
         if (file_exists(config('cache.stores.sqlite.database'))) {
-            app('db')->connection('sqlite_cache')->statement('delete from cache_locks;');
+            app('db')->connection(CacheConnection::NAME)->statement('delete from cache_locks;');
         }
 
         $this->info('Purged cache_locks table...');

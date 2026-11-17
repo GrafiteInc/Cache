@@ -3,7 +3,7 @@
 namespace Grafite\Cache\Commands;
 
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Config;
+use Grafite\Cache\CacheConnection;
 
 class CreateCacheDatabase extends Command
 {
@@ -34,18 +34,10 @@ class CreateCacheDatabase extends Command
             touch(config('cache.stores.sqlite.database'));
         }
 
-        \sleep(1);
-
-         Config::set('database.connections.sqlite_cache', [
-            'driver' => 'sqlite',
-            'database' => config('cache.stores.sqlite.database'),
-            'prefix' => config('cache.stores.sqlite.prefix'),
-        ]);
-
-        sleep(1);
+        CacheConnection::register();
 
         // Set the table
-        app('db')->connection('sqlite_cache')->statement('CREATE TABLE cache (key STRING PRIMARY KEY, value LONGTEXT, expiration INTEGER)');
+        app('db')->connection(CacheConnection::NAME)->statement('CREATE TABLE cache (key STRING PRIMARY KEY, value LONGTEXT, expiration INTEGER)');
 
         return 0;
     }
