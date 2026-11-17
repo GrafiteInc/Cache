@@ -2,7 +2,6 @@
 
 namespace Tests\Unit;
 
-use Illuminate\Support\Facades\Artisan;
 use Tests\TestCase;
 use Illuminate\Support\Facades\Cache;
 
@@ -10,12 +9,7 @@ class CacheTest extends TestCase
 {
     public function testCacheProvider()
     {
-        if (file_exists(database_path('cache.sqlite'))) {
-            unlink(database_path('cache.sqlite'));
-        }
-
-        // Create the database
-        Artisan::call('sql-cache:make:database');
+        $this->freshDatabase();
 
         // Put a value
         Cache::put('foo', 'bar', 60);
@@ -27,12 +21,7 @@ class CacheTest extends TestCase
 
     public function testCacheKeyMaker()
     {
-        if (file_exists(database_path('cache.sqlite'))) {
-            unlink(database_path('cache.sqlite'));
-        }
-
-        // Create the database
-        Artisan::call('sql-cache:make:database');
+        $this->freshDatabase();
 
         // Put a value
         $key = cache()->key('foo', ['bar']);
@@ -46,15 +35,7 @@ class CacheTest extends TestCase
 
     public function testCacheLocksTable()
     {
-        if (file_exists(database_path('cache.sqlite'))) {
-            unlink(database_path('cache.sqlite'));
-        }
-
-        // Create the database
-        Artisan::call('sql-cache:make:database');
-
-        // Create the lock table
-        Artisan::call('sql-cache:make:locks-table');
+        $this->freshDatabase(withLocks: true);
 
         $lock = cache()->lock('foo-bar', 10);
         $value = 'bar';
